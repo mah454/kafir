@@ -6,10 +6,9 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>kafir</name>
-    <url>http://maven.apache.org</url>
 
-    <url>https://github.com/mah454/jpodman</url>
-    <description>Communicate with podman rest api service</description>
+    <url>https://github.com/mah454/kafir</url>
+    <description>Java http rest client</description>
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -25,9 +24,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git@github.com:mah454/jpodman.git</connection>
-        <developerConnection>scm:git:git@github.com:mah454/jpodman.git</developerConnection>
-        <url>https://github.com/mah454/jpodman</url>
+        <connection>scm:git:git@github.com:mah454/kafir.git</connection>
+        <developerConnection>scm:git:git@github.com:mah454/kafir.git</developerConnection>
+        <url>https://github.com/mah454/kafir</url>
     </scm>
 
     <dependencies>
