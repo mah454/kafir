@@ -2,8 +2,21 @@
 
 API base http client (replacement for retrofit or jersey-client)     
 Used only pure java HttpClient api .
-#### Usage
 
+### Usage
+
+**Add dependency:**
+
+```xml
+
+<dependency>
+    <groupId>ir.moke</groupId>
+    <artifactId>kafir</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+Simple Usage:   
 ```java
 import ir.moke.kafir.annotation.PathParameter;
 
