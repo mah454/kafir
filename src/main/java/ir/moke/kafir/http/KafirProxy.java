@@ -35,7 +35,7 @@ class KafirProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Map<String, String> queryParameters = new HashMap<>();
+        StringBuilder queryParameters = new StringBuilder();
         Map<String, String> pathParameters = new HashMap<>();
         String apiPath = "";
         Class<?> returnType = ReflectionUtils.getReturnTypeClass(method);
@@ -56,14 +56,21 @@ class KafirProxy implements InvocationHandler {
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 Parameter parameter = method.getParameters()[i];
+                Object arg = args[i];
                 if (parameter.isAnnotationPresent(QueryParameter.class)) {
-                    String value = parameter.getDeclaredAnnotation(QueryParameter.class).value();
-                    queryParameters.put(value, String.valueOf(args[i]));
+                    String paramKey = parameter.getDeclaredAnnotation(QueryParameter.class).value();
+                    if (Iterable.class.isAssignableFrom(arg.getClass())) {
+                        for (Object item : (Iterable) arg) {
+                            queryParameters.append(paramKey).append("=").append(item).append("&");
+                        }
+                    } else {
+                        queryParameters.append(paramKey).append("=").append(arg).append("&");
+                    }
                 }
 
                 if (parameter.isAnnotationPresent(PathParameter.class)) {
                     String value = parameter.getDeclaredAnnotation(PathParameter.class).value();
-                    pathParameters.put(value, String.valueOf(args[i]));
+                    pathParameters.put(value, String.valueOf(arg));
                 }
             }
         }
@@ -72,7 +79,7 @@ class KafirProxy implements InvocationHandler {
         if (queryParameters.isEmpty() && pathParameters.isEmpty()) {
             formatedUri = baseUri + apiPath;
         } else {
-            formatedUri = Parser.parsePathParameters(baseUri + apiPath, pathParameters) + "?" + Parser.parseQueryParameter(queryParameters);
+            formatedUri = Parser.parsePathParameters(baseUri + apiPath, pathParameters) + "?" + queryParameters;
         }
 
         URI uri = URI.create(formatedUri);
