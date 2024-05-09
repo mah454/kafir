@@ -1,5 +1,6 @@
 package ir.moke.kafir.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,11 +26,11 @@ public class JsonUtils {
                 .configure(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true)
                 .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                 .configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true)
-                .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
                 .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
-                .build();
+                .build()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public static String toJson(Object o) {
@@ -71,7 +72,7 @@ public class JsonUtils {
 
     }
 
-    public static <T> T toObject(String str, Class<? extends Collection<?>> collectionType, Class<?> genericType) {
+    public static <T> T toObject(String str, Class<? extends Collection> collectionType, Class<?> genericType) {
         try {
             CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(collectionType, genericType);
             return objectMapper.readValue(str, listType);

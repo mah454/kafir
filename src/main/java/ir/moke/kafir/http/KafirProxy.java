@@ -57,20 +57,22 @@ class KafirProxy implements InvocationHandler {
             for (int i = 0; i < args.length; i++) {
                 Parameter parameter = method.getParameters()[i];
                 Object arg = args[i];
-                if (parameter.isAnnotationPresent(QueryParameter.class)) {
-                    String paramKey = parameter.getDeclaredAnnotation(QueryParameter.class).value();
-                    if (Iterable.class.isAssignableFrom(arg.getClass())) {
-                        for (Object item : (Iterable) arg) {
-                            queryParameters.append(paramKey).append("=").append(item).append("&");
+                if (arg != null) {
+                    if (parameter.isAnnotationPresent(QueryParameter.class)) {
+                        String paramKey = parameter.getDeclaredAnnotation(QueryParameter.class).value();
+                        if (Iterable.class.isAssignableFrom(arg.getClass())) {
+                            for (Object item : (Iterable<?>) arg) {
+                                queryParameters.append(paramKey).append("=").append(String.valueOf(item).trim()).append("&");
+                            }
+                        } else {
+                            queryParameters.append(paramKey).append("=").append(String.valueOf(arg).trim()).append("&");
                         }
-                    } else {
-                        queryParameters.append(paramKey).append("=").append(arg).append("&");
                     }
-                }
 
-                if (parameter.isAnnotationPresent(PathParameter.class)) {
-                    String value = parameter.getDeclaredAnnotation(PathParameter.class).value();
-                    pathParameters.put(value, String.valueOf(arg));
+                    if (parameter.isAnnotationPresent(PathParameter.class)) {
+                        String value = parameter.getDeclaredAnnotation(PathParameter.class).value();
+                        pathParameters.put(value, String.valueOf(arg).trim());
+                    }
                 }
             }
         }
