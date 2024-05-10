@@ -95,8 +95,8 @@ class KafirProxy implements InvocationHandler {
 
         HttpRequest request = requestBuilder.build();
         if (Future.class.isAssignableFrom(returnType)) {
-            return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(item -> Parser.parseStringResponse(method, returnType, item.body()));
+            return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+//                    .thenApply(item -> Parser.parseStringResponse(method, returnType, item.body()));
         } else if (HttpResponse.class.isAssignableFrom(returnType)) {
             return client.send(request, new JsonBodyHandler<>(method));
         } else {
