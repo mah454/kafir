@@ -64,7 +64,7 @@ public class MainClass {
 
         Person person = new Person();
         person.setName("ali");
-        HttpResponse<Person> httpResponse = personService.addNewPerson(personService);
+        HttpResponse<Person> httpResponse = personService.addNewPerson(person);
         System.out.println(httpResponse.statusCode());
         System.out.println(httpResponse.body().getId());
     }
