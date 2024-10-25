@@ -24,8 +24,13 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+// You can use global header
+@Header(parameters = {@HeaderParameter(key = "global-header", value = "global-header-value")})
 public class PersonService {
+    
     @POST("person/add")
+    // You can use special header
+    @Header(parameters = {@HeaderParameter(key = "special-header", value = "special-header-value")})
     HttpResponse<Person> addNewPerson(Person person);
 
     @POST("person/add")
@@ -57,9 +62,14 @@ import java.net.http.HttpResponse;
 public class MainClass {
 
     public static void main(String[] args) {
+        Map<String,String> dynamicHeaders = new HashMap<>();
+        /*
+         * dynamicHeaders.put(key,value);
+         */
         PersonService personService = new Kafir.KafirBuilder()
                 .setBaseUri("http://127.0.0.1:8080/api/v1")
                 .setVersion(HttpClient.Version.HTTP_2)
+                // .setHeaders(headers) this is optional 
                 .build(PersonService.class);
 
         Person person = new Person();
