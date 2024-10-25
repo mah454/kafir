@@ -5,6 +5,7 @@ import java.lang.reflect.Proxy;
 import java.net.Authenticator;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 public class Kafir {
@@ -15,6 +16,7 @@ public class Kafir {
     public ExecutorService executorService;
     public SSLContext sslContext;
     public Duration connectionTimeout;
+    public Map<String,String> headers;
 
     private Kafir() {
     }
@@ -35,6 +37,7 @@ public class Kafir {
         private ExecutorService executorService;
         private SSLContext sslContext;
         private Duration connectionTimeout;
+        public Map<String,String> headers;
 
         public KafirBuilder setBaseUri(String baseUri) {
             this.baseUri = baseUri;
@@ -66,6 +69,11 @@ public class Kafir {
             return this;
         }
 
+        public KafirBuilder setHeaders(Map<String, String> headers) {
+            this.headers = headers;
+            return this;
+        }
+
         protected String getBaseUri() {
             return baseUri;
         }
@@ -88,6 +96,10 @@ public class Kafir {
 
         protected Duration getConnectionTimeout() {
             return connectionTimeout;
+        }
+
+        public Map<String, String> getHeaders() {
+            return headers;
         }
 
         @SuppressWarnings("unchecked")

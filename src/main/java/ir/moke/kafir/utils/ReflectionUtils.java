@@ -7,6 +7,10 @@ import java.util.Map;
 
 public class ReflectionUtils {
 
+    public static Class<?> getClassOfMethod(Method method) {
+        return method.getDeclaringClass();
+    }
+
     public static Type getReturnType(Method method) {
         try {
             Class<?>[] parameterTypes = Arrays.stream(method.getParameters())

@@ -20,9 +20,11 @@ import java.util.concurrent.Future;
 class KafirProxy implements InvocationHandler {
     private final String baseUri;
     private final HttpClient client;
+    private final Map<String, String> headers = new HashMap<>();
 
     public KafirProxy(Kafir.KafirBuilder builder) {
         baseUri = builder.getBaseUri();
+        Optional.ofNullable(builder.getHeaders()).ifPresent(headers::putAll);
         HttpClient.Builder httpClientBuilder = HttpClient.newBuilder();
         Optional.ofNullable(builder.getAuthenticator()).ifPresent(httpClientBuilder::authenticator);
         Optional.ofNullable(builder.getVersion()).ifPresent(httpClientBuilder::version);
@@ -33,8 +35,25 @@ class KafirProxy implements InvocationHandler {
         client = httpClientBuilder.build();
     }
 
+    private static HttpRequest.BodyPublisher initializeBodyPublisher(Method method, Object[] args) {
+        Object o = extractRequestBody(method, args);
+        if (o == null) return HttpRequest.BodyPublishers.noBody();
+        return HttpRequest.BodyPublishers.ofString(JsonUtils.toJson(o));
+    }
+
+    private static Object extractRequestBody(Method method, Object[] args) {
+        for (int i = 0; i < method.getParameters().length; i++) {
+            if (method.getParameters()[i].getDeclaredAnnotations().length == 0) {
+                return args[i];
+            }
+        }
+        return null;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        setAnnotationHeaders(method);
+
         StringBuilder queryParameters = new StringBuilder();
         Map<String, String> pathParameters = new HashMap<>();
         String apiPath = "";
@@ -86,6 +105,7 @@ class KafirProxy implements InvocationHandler {
 
         URI uri = URI.create(formatedUri);
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(uri);
+        if (!headers.isEmpty()) headers.forEach(requestBuilder::setHeader);
         requestBuilder = switch (methodType) {
             case GET -> requestBuilder.GET();
             case POST -> requestBuilder.POST(initializeBodyPublisher(method, args));
@@ -106,18 +126,25 @@ class KafirProxy implements InvocationHandler {
         }
     }
 
-    private static HttpRequest.BodyPublisher initializeBodyPublisher(Method method, Object[] args) {
-        Object o = extractRequestBody(method, args);
-        if (o == null) return HttpRequest.BodyPublishers.noBody();
-        return HttpRequest.BodyPublishers.ofString(JsonUtils.toJson(o));
-    }
-
-    private static Object extractRequestBody(Method method, Object[] args) {
-        for (int i = 0; i < method.getParameters().length; i++) {
-            if (method.getParameters()[i].getDeclaredAnnotations().length == 0) {
-                return args[i];
+    private void setAnnotationHeaders(Method method) {
+        Class<?> clazz = ReflectionUtils.getClassOfMethod(method);
+        if (clazz.isAnnotationPresent(Header.class)) {
+            Header headerAnnotation = clazz.getDeclaredAnnotation(Header.class);
+            for (HeaderParameter headerParams : headerAnnotation.parameters()) {
+                String key = headerParams.key();
+                String value = headerParams.value();
+                headers.put(key, value);
             }
         }
-        return null;
+
+
+        if (method.isAnnotationPresent(Header.class)) {
+            Header methodHeaders = method.getDeclaredAnnotation(Header.class);
+            for (HeaderParameter headerParams : methodHeaders.parameters()) {
+                String key = headerParams.key();
+                String value = headerParams.value();
+                headers.put(key, value);
+            }
+        }
     }
 }
