@@ -4,7 +4,7 @@
     <groupId>ir.moke</groupId>
     <artifactId>kafir</artifactId>
     <packaging>jar</packaging>
-    <version>1.1</version>
+    <version>1.2</version>
     <name>kafir</name>
 
     <url>https://github.com/mah454/kafir</url>
