@@ -74,27 +74,27 @@ public class Kafir {
             return this;
         }
 
-        protected String getBaseUri() {
+        public String getBaseUri() {
             return baseUri;
         }
 
-        protected HttpClient.Version getVersion() {
+        public HttpClient.Version getVersion() {
             return version;
         }
 
-        protected Authenticator getAuthenticator() {
+        public Authenticator getAuthenticator() {
             return authenticator;
         }
 
-        protected ExecutorService getExecutorService() {
+        public ExecutorService getExecutorService() {
             return executorService;
         }
 
-        protected SSLContext getSslContext() {
+        public SSLContext getSslContext() {
             return sslContext;
         }
 
-        protected Duration getConnectionTimeout() {
+        public Duration getConnectionTimeout() {
             return connectionTimeout;
         }
 
