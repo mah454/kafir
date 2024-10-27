@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 @Header(parameters = {@HeaderParameter(key = "class-header", value = "class-header-value")})
 public interface BookService {
 
-    @POST("/post")
+    @POST("post")
     HttpResponse<String> postItem(Book book);
 
     @GET("/get")

@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KafirTest {
-    private static final BookService bookService = new Kafir.KafirBuilder()
-            .setBaseUri("http://localhost:80/")
-            .build(BookService.class);
 
     @Test
     public void checkPost() {
+        BookService bookService = new Kafir.KafirBuilder()
+                .setBaseUri("http://localhost:80/")
+                .build(BookService.class);
         HttpResponse<String> response = bookService.postItem(new Book("test book", "abcd1234"));
         int statusCode = response.statusCode();
         String body = response.body();
@@ -22,7 +22,24 @@ public class KafirTest {
     }
 
     @Test
+    public void checkInterceptor() {
+        BookService bookService = new Kafir.KafirBuilder()
+                .setBaseUri("http://localhost:80/")
+                .setInterceptor(new RequestInterceptor())
+                .build(BookService.class);
+        HttpResponse<String> response = bookService.sendHeader();
+        int statusCode = response.statusCode();
+        String body = response.body();
+        Assertions.assertEquals(200, statusCode);
+
+        System.out.println(body);
+    }
+
+    @Test
     public void checkAnnotationHeader() {
+        BookService bookService = new Kafir.KafirBuilder()
+                .setBaseUri("http://localhost:80/")
+                .build(BookService.class);
         HttpResponse<String> response = bookService.sendHeader();
         int statusCode = response.statusCode();
         String body = response.body();
@@ -32,9 +49,9 @@ public class KafirTest {
 
     @Test
     public void checkDynamicHeader() {
-        Map<String,String> headers = new HashMap<>();
-        headers.put("dynamic-1","d1");
-        headers.put("dynamic-2","d2");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("dynamic-1", "d1");
+        headers.put("dynamic-2", "d2");
         BookService bookService = new Kafir.KafirBuilder()
                 .setBaseUri("http://localhost:80/")
                 .setHeaders(headers)

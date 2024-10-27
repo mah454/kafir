@@ -16,7 +16,7 @@ public class Kafir {
     public ExecutorService executorService;
     public SSLContext sslContext;
     public Duration connectionTimeout;
-    public Map<String,String> headers;
+    public Map<String, String> headers;
 
     private Kafir() {
     }
@@ -31,17 +31,27 @@ public class Kafir {
     }
 
     public static class KafirBuilder {
+        private Map<String, String> headers;
+        private Interceptor interceptor;
         private String baseUri;
         private HttpClient.Version version;
         private Authenticator authenticator;
         private ExecutorService executorService;
         private SSLContext sslContext;
         private Duration connectionTimeout;
-        public Map<String,String> headers;
+
+        public String getBaseUri() {
+            return baseUri;
+        }
 
         public KafirBuilder setBaseUri(String baseUri) {
+//            this.baseUri = baseUri.trim().replaceAll("^/+|/+$", "");
             this.baseUri = baseUri;
             return this;
+        }
+
+        public HttpClient.Version getVersion() {
+            return version;
         }
 
         public KafirBuilder setVersion(HttpClient.Version version) {
@@ -49,9 +59,17 @@ public class Kafir {
             return this;
         }
 
+        public Authenticator getAuthenticator() {
+            return authenticator;
+        }
+
         public KafirBuilder setAuthenticator(Authenticator authenticator) {
             this.authenticator = authenticator;
             return this;
+        }
+
+        public ExecutorService getExecutorService() {
+            return executorService;
         }
 
         public KafirBuilder setExecutorService(ExecutorService executorService) {
@@ -59,9 +77,17 @@ public class Kafir {
             return this;
         }
 
+        public SSLContext getSslContext() {
+            return sslContext;
+        }
+
         public KafirBuilder setSslContext(SSLContext sslContext) {
             this.sslContext = sslContext;
             return this;
+        }
+
+        public Duration getConnectionTimeout() {
+            return connectionTimeout;
         }
 
         public KafirBuilder setConnectionTimeout(Duration connectionTimeout) {
@@ -69,37 +95,22 @@ public class Kafir {
             return this;
         }
 
+        public Map<String, String> getHeaders() {
+            return headers;
+        }
+
         public KafirBuilder setHeaders(Map<String, String> headers) {
             this.headers = headers;
             return this;
         }
 
-        public String getBaseUri() {
-            return baseUri;
+        public Interceptor getInterceptor() {
+            return interceptor;
         }
 
-        public HttpClient.Version getVersion() {
-            return version;
-        }
-
-        public Authenticator getAuthenticator() {
-            return authenticator;
-        }
-
-        public ExecutorService getExecutorService() {
-            return executorService;
-        }
-
-        public SSLContext getSslContext() {
-            return sslContext;
-        }
-
-        public Duration getConnectionTimeout() {
-            return connectionTimeout;
-        }
-
-        public Map<String, String> getHeaders() {
-            return headers;
+        public KafirBuilder setInterceptor(Interceptor interceptor) {
+            this.interceptor = interceptor;
+            return this;
         }
 
         @SuppressWarnings("unchecked")

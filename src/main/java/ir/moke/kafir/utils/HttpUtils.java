@@ -47,6 +47,8 @@ public class HttpUtils {
             methodType = HttpMethod.DELETE;
         }
 
+//        if (!apiPath.startsWith("/")) throw new RuntimeException("Api path [%s] should be started with \"/\"".formatted(apiPath));
+
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 Parameter parameter = method.getParameters()[i];
