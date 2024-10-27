@@ -77,7 +77,7 @@ public class HttpUtils {
         if (queryParameters.isEmpty() && pathParameters.isEmpty()) {
             formatedUri = baseUri + apiPath;
         } else {
-            formatedUri = Parser.parsePathParameters(baseUri + apiPath, pathParameters) + "?" + queryParameters;
+            formatedUri = Parser.parsePathParameters(baseUri + apiPath, pathParameters) + "?" + (queryParameters.toString().endsWith("&") ? queryParameters.substring(0, queryParameters.length() - 1) : queryParameters);
         }
 
         URI uri = URI.create(formatedUri);
