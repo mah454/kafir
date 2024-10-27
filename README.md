@@ -12,7 +12,7 @@ Used only pure java HttpClient api .
 <dependency>
     <groupId>ir.moke</groupId>
     <artifactId>kafir</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
 </dependency>
 ```
 
