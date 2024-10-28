@@ -1,3 +1,5 @@
+package ir.moke.kafir;
+
 import ir.moke.kafir.http.Interceptor;
 
 import java.net.URI;

@@ -1,3 +1,5 @@
+package ir.moke.kafir;
+
 import ir.moke.kafir.http.Kafir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
