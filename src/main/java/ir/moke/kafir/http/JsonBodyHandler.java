@@ -13,7 +13,6 @@ public class JsonBodyHandler<T> implements HttpResponse.BodyHandler<T> {
 
     public JsonBodyHandler(Method method) {
         this.method = method;
-        detectReturnType(method);
     }
 
     @Override
@@ -23,18 +22,7 @@ public class JsonBodyHandler<T> implements HttpResponse.BodyHandler<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private T getResult(String s) {
-        Class<?> returnType = detectReturnType(method);
-        return (T) Parser.parseStringResponse(method, returnType, s);
-    }
-
-    private Class<?> detectReturnType(Method method) {
-        try {
-            // detect HttpResponse<?>
-            ParameterizedType genericReturnType = ReflectionUtils.getMethodGenericReturnType(method);
-            return (Class<?>) genericReturnType.getActualTypeArguments()[0];
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private T getResult(String body) {
+        return (T) Parser.parseStringResponse(method, body);
     }
 }
