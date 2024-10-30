@@ -27,6 +27,8 @@ public class Parser {
             } else {
                 return parseTypes((Class<?>) pt.getActualTypeArguments()[0], body);
             }
+        } else if (ReflectionUtils.isGenericType(method.getGenericReturnType())) {
+            return JsonUtils.toObject(body, method.getGenericReturnType().getTypeName());
         } else {
             return parseTypes(returnType, body);
         }
@@ -60,8 +62,6 @@ public class Parser {
             return new BigInteger(body);
         } else if (BigDecimal.class.isAssignableFrom(returnType)) {
             return new BigDecimal(body);
-        } else if (ReflectionUtils.isGenericType(returnType)) {
-            return JsonUtils.toObject(body, returnType.getTypeName());
         } else {
             return JsonUtils.toObject(body, returnType);
         }

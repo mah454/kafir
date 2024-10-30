@@ -120,9 +120,7 @@ public class HttpUtils {
         } else if (HttpResponse.class.isAssignableFrom(returnType)) {
             return httpClient.send(httpRequest, new JsonBodyHandler<>(method));
         } else {
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            String body = httpResponse.body();
-            return Parser.parseStringResponse(method, body);
+            return httpClient.send(httpRequest, new JsonBodyHandler<>(method)).body();
         }
     }
 
