@@ -107,11 +107,14 @@ public class HttpUtils {
             if (ReflectionUtils.isGenericType(parameterizedType.getActualTypeArguments()[0])) {
                 ParameterizedType pt = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
                 if (HttpResponse.class.isAssignableFrom((Class<?>) pt.getRawType())) {
+                    // Used for HttpResponse<?>
                     return future;
                 } else {
+                    // Used for generic types
                     return future.thenApply(HttpResponse::body);
                 }
             } else {
+                // Used for any non-generic types like primitives
                 return future.thenApply(HttpResponse::body);
             }
         } else if (HttpResponse.class.isAssignableFrom(returnType)) {
