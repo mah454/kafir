@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -76,6 +77,15 @@ public class JsonUtils {
         try {
             CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(collectionType, genericType);
             return objectMapper.readValue(str, listType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T toObject(String str, String canonicalType) {
+        try {
+            JavaType javaType = objectMapper.getTypeFactory().constructFromCanonical(canonicalType);
+            return objectMapper.readValue(str, javaType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

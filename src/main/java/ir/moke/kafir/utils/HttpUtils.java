@@ -8,6 +8,7 @@ import ir.moke.kafir.http.Kafir;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,7 +16,10 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HttpUtils {
     public static HttpClient buildHttpClient(Kafir.KafirBuilder builder) {
@@ -77,7 +81,7 @@ public class HttpUtils {
         if (queryParameters.isEmpty() && pathParameters.isEmpty()) {
             formatedUri = baseUri + apiPath;
         } else {
-            formatedUri = Parser.parsePathParameters(baseUri + apiPath, pathParameters) + "?" + (queryParameters.toString().endsWith("&") ? queryParameters.substring(0, queryParameters.length() - 1) : queryParameters);
+            formatedUri = parsePathParameters(baseUri + apiPath, pathParameters) + "?" + (queryParameters.toString().endsWith("&") ? queryParameters.substring(0, queryParameters.length() - 1) : queryParameters);
         }
 
         URI uri = URI.create(formatedUri);
@@ -96,16 +100,26 @@ public class HttpUtils {
     }
 
     public static Object responseBuilder(Method method, HttpRequest httpRequest, HttpClient httpClient) throws IOException, InterruptedException {
-        Class<?> returnType = ReflectionUtils.getReturnTypeClass(method);
+        CompletableFuture<HttpResponse<Object>> future = httpClient.sendAsync(httpRequest, new JsonBodyHandler<>(method));
+        Class<?> returnType = method.getReturnType();
         if (Future.class.isAssignableFrom(returnType)) {
-            return httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
-//                    .thenApply(item -> Parser.parseStringResponse(method, returnType, item.body()));
+            ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
+            if (ReflectionUtils.isGenericType(parameterizedType.getActualTypeArguments()[0])) {
+                ParameterizedType pt = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
+                if (HttpResponse.class.isAssignableFrom((Class<?>) pt.getRawType())) {
+                    return future;
+                } else {
+                    return future.thenApply(HttpResponse::body);
+                }
+            } else {
+                return future.thenApply(HttpResponse::body);
+            }
         } else if (HttpResponse.class.isAssignableFrom(returnType)) {
             return httpClient.send(httpRequest, new JsonBodyHandler<>(method));
         } else {
             HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             String body = httpResponse.body();
-            return Parser.parseStringResponse(method, returnType, body);
+            return Parser.parseStringResponse(method, body);
         }
     }
 
@@ -145,5 +159,30 @@ public class HttpUtils {
             }
         }
         return null;
+    }
+
+    public static String parsePathParameters(String apiPath, Map<String, String> parameters) {
+        final Pattern pattern = Pattern.compile("\\{.*?\\}");
+        Matcher matcher = pattern.matcher(apiPath);
+
+        StringBuilder sb = new StringBuilder();
+
+        while (matcher.find()) {
+            String str = matcher.group();
+            String replacement = parameters.get(str.replace("{", "").replace("}", ""));
+            matcher.appendReplacement(sb, replacement);
+        }
+
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    public static String parseQueryParameter(Map<String, String> map) {
+        StringBuilder sb = new StringBuilder();
+        map.forEach((k, v) -> {
+            sb.append(k).append("=").append(v).append("&");
+        });
+        if (sb.isEmpty()) return "";
+        return sb.substring(0, sb.length() - 1);
     }
 }

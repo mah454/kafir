@@ -2,65 +2,68 @@ package ir.moke.kafir.utils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.http.HttpResponse;
+import java.util.concurrent.Future;
 
 public class Parser {
+    public static Object parseStringResponse(Method method, String body) {
+        Class<?> returnType = method.getReturnType();
 
-    public static Object parseStringResponse(Method method, Class<?> returnType, String body) {
+        if (HttpResponse.class.isAssignableFrom(returnType)) {
+            ParameterizedType pt = (ParameterizedType) method.getGenericReturnType();
+            return handleHttpResponse(pt, body);
+        } else if (Future.class.isAssignableFrom(returnType)) {
+            ParameterizedType pt = (ParameterizedType) method.getGenericReturnType();
+            if (ReflectionUtils.isGenericType(pt.getActualTypeArguments()[0])) {
+                pt = (ParameterizedType) pt.getActualTypeArguments()[0];
+                if (HttpResponse.class.isAssignableFrom((Class<?>) pt.getRawType())) {
+                    return handleHttpResponse(pt, body);
+                } else {
+                    return JsonUtils.toObject(body, pt.getTypeName());
+                }
+            } else {
+                return parseTypes((Class<?>) pt.getActualTypeArguments()[0], body);
+            }
+        } else {
+            return parseTypes(returnType, body);
+        }
+    }
+
+    public static Object handleHttpResponse(ParameterizedType pt, String body) {
+        Type actualTypeArgument = pt.getActualTypeArguments()[0];
+        if (ReflectionUtils.isGenericType(actualTypeArgument)) {
+            return JsonUtils.toObject(body, actualTypeArgument.getTypeName());
+        } else {
+            return parseTypes((Class<?>) actualTypeArgument, body);
+        }
+    }
+
+    private static Object parseTypes(Class<?> returnType, String body) {
         if (String.class.isAssignableFrom(returnType)) {
-            return String.valueOf(body);
+            return body;
         } else if (Void.class.isAssignableFrom(returnType)) {
             return Void.class;
-        } else if (Boolean.class.isAssignableFrom(returnType) || boolean.class.isAssignableFrom(returnType)) {
+        } else if (boolean.class.isAssignableFrom(returnType) || Boolean.class.isAssignableFrom(returnType)) {
             return Boolean.parseBoolean(body);
-        } else if (Iterable.class.isAssignableFrom(returnType)) {
-            return parseIterableJson(method, body);
-        } else if (Map.class.isAssignableFrom(returnType)) {
-            return JsonUtils.toMap(body);
+        } else if (int.class.isAssignableFrom(returnType) || Integer.class.isAssignableFrom(returnType)) {
+            return Integer.parseInt(body);
+        } else if (long.class.isAssignableFrom(returnType) || Long.class.isAssignableFrom(returnType)) {
+            return Long.parseLong(body);
+        } else if (double.class.isAssignableFrom(returnType) || Double.class.isAssignableFrom(returnType)) {
+            return Double.parseDouble(body);
+        } else if (float.class.isAssignableFrom(returnType) || Float.class.isAssignableFrom(returnType)) {
+            return Float.parseFloat(body);
+        } else if (BigInteger.class.isAssignableFrom(returnType)) {
+            return new BigInteger(body);
+        } else if (BigDecimal.class.isAssignableFrom(returnType)) {
+            return new BigDecimal(body);
+        } else if (ReflectionUtils.isGenericType(returnType)) {
+            return JsonUtils.toObject(body, returnType.getTypeName());
         } else {
             return JsonUtils.toObject(body, returnType);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Object parseIterableJson(Method method, String body) {
-        ParameterizedType parameterizedType = ReflectionUtils.getMethodGenericReturnType(method);
-        Class<? extends Collection<?>> collectionType = (Class<? extends Collection<?>>) parameterizedType.getRawType();
-        if (ReflectionUtils.isGenericType(parameterizedType.getActualTypeArguments()[0])) {
-            Class<?> rawOfGeneric = ReflectionUtils.getRawOfGeneric(parameterizedType);
-            return JsonUtils.toObject(body, collectionType, rawOfGeneric);
-        } else {
-            Class<?> genericType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-            return JsonUtils.toObject(body, collectionType, genericType);
-        }
-    }
-
-    public static String parsePathParameters(String apiPath, Map<String, String> parameters) {
-        final Pattern pattern = Pattern.compile("\\{.*?\\}");
-        Matcher matcher = pattern.matcher(apiPath);
-
-        StringBuilder sb = new StringBuilder();
-
-        while (matcher.find()) {
-            String str = matcher.group();
-            String replacement = parameters.get(str.replace("{", "").replace("}", ""));
-            matcher.appendReplacement(sb, replacement);
-        }
-
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
-
-
-    public static String parseQueryParameter(Map<String, String> map) {
-        StringBuilder sb = new StringBuilder();
-        map.forEach((k, v) -> {
-            sb.append(k).append("=").append(v).append("&");
-        });
-        if (sb.isEmpty()) return "";
-        return sb.substring(0, sb.length() - 1);
     }
 }
