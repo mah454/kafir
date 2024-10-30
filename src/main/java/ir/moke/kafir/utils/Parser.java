@@ -20,16 +20,21 @@ public class Parser {
             if (ReflectionUtils.isGenericType(pt.getActualTypeArguments()[0])) {
                 pt = (ParameterizedType) pt.getActualTypeArguments()[0];
                 if (HttpResponse.class.isAssignableFrom((Class<?>) pt.getRawType())) {
+                    // Used for CompletableFuture<HttpResponse<GenericType<T>>>
                     return handleHttpResponse(pt, body);
                 } else {
+                    // Used for CompletableFuture<GenericType<T>>
                     return JsonUtils.toObject(body, pt.getTypeName());
                 }
             } else {
+                // Used for CompletableFuture<T>
                 return parseTypes((Class<?>) pt.getActualTypeArguments()[0], body);
             }
         } else if (ReflectionUtils.isGenericType(method.getGenericReturnType())) {
+            // Used for GenericType<T>
             return JsonUtils.toObject(body, method.getGenericReturnType().getTypeName());
         } else {
+            // Used for T
             return parseTypes(returnType, body);
         }
     }
