@@ -41,7 +41,7 @@ public class PersonService {
                         @QueryParameter("id") Long id);
 
     @DELETE("person/remove")
-    HttpResponse<Void> search(@QueryParameter("username") String username);
+    HttpResponse<Void> remove(@QueryParameter("username") String username);
 
     @GET("person/{username}")
     Person search(@PathParameter("username") String username);
