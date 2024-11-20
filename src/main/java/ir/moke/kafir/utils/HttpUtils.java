@@ -100,10 +100,11 @@ public class HttpUtils {
     }
 
     public static Object responseBuilder(Method method, HttpRequest httpRequest, HttpClient httpClient) throws IOException, InterruptedException {
-        CompletableFuture<HttpResponse<Object>> future = httpClient.sendAsync(httpRequest, new JsonBodyHandler<>(method));
         Class<?> returnType = method.getReturnType();
+
         // Used for CompletableFuture<?>
         if (Future.class.isAssignableFrom(returnType)) {
+            CompletableFuture<HttpResponse<Object>> future = httpClient.sendAsync(httpRequest, new JsonBodyHandler<>(method));
             ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
             if (ReflectionUtils.isGenericType(parameterizedType.getActualTypeArguments()[0])) {
                 ParameterizedType pt = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
