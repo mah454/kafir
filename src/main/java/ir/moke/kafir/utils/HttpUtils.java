@@ -93,7 +93,7 @@ public class HttpUtils {
             case DELETE -> requestBuilder.DELETE();
         };
 
-
+        setAnnotationHeaders(method, requestBuilder);
         if (dynamicHeaders != null && !dynamicHeaders.isEmpty()) dynamicHeaders.forEach(requestBuilder::setHeader);
 
         return requestBuilder.build();
@@ -127,15 +127,14 @@ public class HttpUtils {
         }
     }
 
-    private static Map<String, String> setAnnotationHeaders(Method method) {
-        Map<String, String> headers = new HashMap<>();
+    private static void setAnnotationHeaders(Method method, HttpRequest.Builder builder) {
         Class<?> clazz = ReflectionUtils.getClassOfMethod(method);
         if (clazz.isAnnotationPresent(Header.class)) {
             Header headerAnnotation = clazz.getDeclaredAnnotation(Header.class);
             for (HeaderParameter headerParams : headerAnnotation.parameters()) {
                 String key = headerParams.key();
                 String value = headerParams.value();
-                headers.put(key, value);
+                builder.setHeader(key, value);
             }
         }
 
@@ -144,10 +143,9 @@ public class HttpUtils {
             for (HeaderParameter headerParams : methodHeaders.parameters()) {
                 String key = headerParams.key();
                 String value = headerParams.value();
-                headers.put(key, value);
+                builder.setHeader(key, value);
             }
         }
-        return headers;
     }
 
     private static HttpRequest.BodyPublisher initializeBodyPublisher(Method method, Object[] args) {
