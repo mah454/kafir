@@ -113,11 +113,11 @@ public class HttpUtils {
                     return future;
                 } else {
                     // Used for generic types CompletableFuture<T<E>>
-                    return future.thenApply(HttpResponse::body);
+                    return future.thenApplyAsync(HttpResponse::body);
                 }
             } else {
                 // Used for any non-generic types like primitives CompletableFuture<T>
-                return future.thenApply(HttpResponse::body);
+                return future.thenApplyAsync(HttpResponse::body);
             }
         } else if (HttpResponse.class.isAssignableFrom(returnType)) {
             // Used for HttpResponse<T>
