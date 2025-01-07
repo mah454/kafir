@@ -17,7 +17,8 @@ class KafirProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-        try (HttpClient httpClient = HttpUtils.buildHttpClient(kafirBuilder)) {
+        try {
+            HttpClient httpClient = HttpUtils.buildHttpClient(kafirBuilder);
             HttpRequest httpRequest = HttpUtils.requestBuilder(kafirBuilder.getBaseUri(), method, args, kafirBuilder.getHeaders());
             Interceptor interceptor = kafirBuilder.getInterceptor();
             if (interceptor != null) {
