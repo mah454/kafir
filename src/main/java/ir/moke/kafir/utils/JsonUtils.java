@@ -1,5 +1,6 @@
 package ir.moke.kafir.utils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,7 @@ public class JsonUtils {
                 .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
                 .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true)
                 .build()
+                .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
