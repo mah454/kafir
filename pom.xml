@@ -4,7 +4,7 @@
     <groupId>ir.moke</groupId>
     <artifactId>kafir</artifactId>
     <packaging>jar</packaging>
-    <version>1.4.7</version>
+    <version>1.4.8</version>
     <name>kafir</name>
 
     <url>https://github.com/mah454/kafir</url>
@@ -47,6 +47,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
 
