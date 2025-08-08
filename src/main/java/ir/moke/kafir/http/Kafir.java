@@ -28,6 +28,7 @@ public class Kafir {
         this.executorService = kafirBuilder.executorService;
         this.sslContext = kafirBuilder.sslContext;
         this.connectionTimeout = kafirBuilder.connectionTimeout;
+        this.headers = kafirBuilder.headers;
     }
 
     public static class KafirBuilder {
