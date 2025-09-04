@@ -101,7 +101,7 @@ public class HttpUtils {
 
     public static Object responseBuilder(Method method, HttpRequest httpRequest, HttpClient httpClient) throws IOException, InterruptedException {
         Class<?> returnType = method.getReturnType();
-
+        if (isVoid(returnType)) return null;
         // Used for CompletableFuture<?>
         if (Future.class.isAssignableFrom(returnType)) {
             CompletableFuture<HttpResponse<Object>> future = httpClient.sendAsync(httpRequest, new JsonBodyHandler<>(method));
@@ -187,5 +187,9 @@ public class HttpUtils {
         });
         if (sb.isEmpty()) return "";
         return sb.substring(0, sb.length() - 1);
+    }
+
+    private static boolean isVoid(final Class<?> clazz) {
+        return Void.class.equals(clazz) || Void.TYPE.equals(clazz);
     }
 }
