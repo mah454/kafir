@@ -3,13 +3,10 @@ package ir.moke.reflection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.moke.kafir.utils.JsonUtils;
 import ir.moke.model.Book;
 import ir.moke.model.Response;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

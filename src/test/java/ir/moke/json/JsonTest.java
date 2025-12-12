@@ -2,7 +2,6 @@ package ir.moke.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.moke.kafir.utils.JsonUtils;
 import ir.moke.model.Book;
 import ir.moke.model.Response;
 import org.junit.jupiter.api.Assertions;
