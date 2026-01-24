@@ -33,7 +33,7 @@
         <dependency>
             <groupId>ir.moke</groupId>
             <artifactId>utils</artifactId>
-            <version>0.2</version>
+            <version>0.3.1</version>
         </dependency>
 
         <!-- Unit test -->
