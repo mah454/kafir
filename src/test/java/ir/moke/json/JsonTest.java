@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.moke.model.Book;
 import ir.moke.model.Response;
-import ir.moke.utils.JsonUtils;
+import ir.moke.utils.json.JsonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +17,8 @@ public class JsonTest {
 
     @Test
     public void serializeJson() {
-        Book book = new Book("test","1234");
-        Response<Book> response = new Response<>(200,book);
+        Book book = new Book("test", "1234");
+        Response<Book> response = new Response<>(200, book);
         String json = JsonUtils.toJson(response);
         System.out.println(json);
         Assertions.assertTrue(json.contains("test"));
@@ -26,6 +26,7 @@ public class JsonTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void deserializeJson() throws JsonProcessingException {
         String json = "{\"code\":200,\"data\":{\"name\":\"test\",\"isbn\":\"1234\"}}";
 
@@ -36,14 +37,14 @@ public class JsonTest {
 //        Response<Book> response = objectMapper.readValue(json, new TypeReference<Response<Book>>() {});
 
 //        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(Response.class, Book.class);
-        Response<Book> response = JsonUtils.toObject(json,Response.class);
+        Response<Book> response = JsonUtils.toObject(json, Response.class);
 
 //        Response<Book> response = objectMapper.readValue(json, javaType);
         System.out.println(response);
     }
 
     private interface Sample {
-        Response<List<Book>> getResponse() ;
+        Response<List<Book>> getResponse();
     }
 
     public static void main(String[] args) throws NoSuchMethodException {

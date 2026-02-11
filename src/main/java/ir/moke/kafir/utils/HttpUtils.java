@@ -4,7 +4,7 @@ import ir.moke.kafir.annotation.*;
 import ir.moke.kafir.http.HttpMethod;
 import ir.moke.kafir.http.JsonBodyHandler;
 import ir.moke.kafir.http.Kafir;
-import ir.moke.utils.JsonUtils;
+import ir.moke.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
