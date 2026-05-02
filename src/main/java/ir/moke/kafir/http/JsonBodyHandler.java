@@ -1,5 +1,6 @@
 package ir.moke.kafir.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ir.moke.kafir.utils.Parser;
 import ir.moke.kafir.utils.ReflectionUtils;
 
@@ -23,6 +24,10 @@ public class JsonBodyHandler<T> implements HttpResponse.BodyHandler<T> {
 
     @SuppressWarnings("unchecked")
     private T getResult(String body) {
-        return (T) Parser.parseStringResponse(method, body);
+        try {
+            return (T) Parser.parseStringResponse(method, body);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

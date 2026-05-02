@@ -1,5 +1,6 @@
 package ir.moke.kafir.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ir.moke.utils.json.JsonUtils;
 
 import java.lang.reflect.Method;
@@ -11,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.Future;
 
 public class Parser {
-    public static Object parseStringResponse(Method method, String body) {
+    public static Object parseStringResponse(Method method, String body) throws JsonProcessingException {
         Class<?> returnType = method.getReturnType();
 
         if (HttpResponse.class.isAssignableFrom(returnType)) {
@@ -41,7 +42,7 @@ public class Parser {
         }
     }
 
-    public static Object handleHttpResponse(ParameterizedType pt, String body) {
+    public static Object handleHttpResponse(ParameterizedType pt, String body) throws JsonProcessingException {
         Type actualTypeArgument = pt.getActualTypeArguments()[0];
         if (ReflectionUtils.isGenericType(actualTypeArgument)) {
             return JsonUtils.toObject(body, actualTypeArgument.getTypeName());
@@ -50,7 +51,7 @@ public class Parser {
         }
     }
 
-    private static Object parseTypes(Class<?> returnType, String body) {
+    private static Object parseTypes(Class<?> returnType, String body) throws JsonProcessingException {
         if (String.class.isAssignableFrom(returnType)) {
             return body;
         } else if (Void.class.isAssignableFrom(returnType)) {

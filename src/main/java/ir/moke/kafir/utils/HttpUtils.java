@@ -1,5 +1,6 @@
 package ir.moke.kafir.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import ir.moke.kafir.annotation.*;
 import ir.moke.kafir.http.HttpMethod;
 import ir.moke.kafir.http.JsonBodyHandler;
@@ -34,7 +35,7 @@ public class HttpUtils {
         return httpClientBuilder.build();
     }
 
-    public static HttpRequest requestBuilder(String baseUri, Method method, Object[] args, Map<String, String> dynamicHeaders) {
+    public static HttpRequest requestBuilder(String baseUri, Method method, Object[] args, Map<String, String> dynamicHeaders) throws JsonProcessingException {
         StringBuilder queryParameters = new StringBuilder();
         Map<String, String> pathParameters = new HashMap<>();
         String apiPath = "";
@@ -153,7 +154,7 @@ public class HttpUtils {
         }
     }
 
-    private static HttpRequest.BodyPublisher initializeBodyPublisher(Method method, Object[] args) {
+    private static HttpRequest.BodyPublisher initializeBodyPublisher(Method method, Object[] args) throws JsonProcessingException {
         Object o = extractRequestBody(method, args);
         if (o == null) return HttpRequest.BodyPublishers.noBody();
         return HttpRequest.BodyPublishers.ofString(JsonUtils.toJson(o));

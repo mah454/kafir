@@ -16,7 +16,7 @@ import java.util.List;
 public class JsonTest {
 
     @Test
-    public void serializeJson() {
+    public void serializeJson() throws JsonProcessingException {
         Book book = new Book("test", "1234");
         Response<Book> response = new Response<>(200, book);
         String json = JsonUtils.toJson(response);
