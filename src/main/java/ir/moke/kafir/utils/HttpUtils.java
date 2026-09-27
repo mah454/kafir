@@ -5,7 +5,7 @@ import ir.moke.kafir.annotation.*;
 import ir.moke.kafir.http.HttpMethod;
 import ir.moke.kafir.http.JsonBodyHandler;
 import ir.moke.kafir.http.Kafir;
-import ir.moke.utils.json.JsonUtils;
+import ir.moke.utils.JsonUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -51,6 +51,9 @@ public class HttpUtils {
         } else if (method.isAnnotationPresent(DELETE.class)) {
             apiPath = method.getDeclaredAnnotation(DELETE.class).value();
             methodType = HttpMethod.DELETE;
+        } else if (method.isAnnotationPresent(PATCH.class)) {
+            apiPath = method.getDeclaredAnnotation(PATCH.class).value();
+            methodType = HttpMethod.PATCH;
         }
 
 //        if (!apiPath.startsWith("/")) throw new RuntimeException("Api path [%s] should be started with \"/\"".formatted(apiPath));
@@ -93,6 +96,7 @@ public class HttpUtils {
             case POST -> requestBuilder.POST(initializeBodyPublisher(method, args));
             case PUT -> requestBuilder.PUT(initializeBodyPublisher(method, args));
             case DELETE -> requestBuilder.DELETE();
+            case PATCH -> requestBuilder.method(methodType.name(),initializeBodyPublisher(method, args));
         };
 
         setAnnotationHeaders(method, requestBuilder);
